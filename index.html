@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeAPI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        body{
+    background-color: rgb(255, 86, 86);
+    padding: 5rem;
+
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+  .pagina{
+    display:flex;
+    justify-content:space-around;
+    font-family:sans-serif;
+  }
+  .pagina span{
+    margin-top:100px;
+    font-size:34px;
+  }
+  #historial {
+    margin: 5rem 0;
+    border-radius: 2rem;
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);;
+  }
+  .tarjeta label{
+    text-transform:capitalize;
+  }
+  .tarjeta img{
+    height:13rem;
+    width:13rem;
+  }
+  .tarjeta-historial img{
+    height:13rem;
+    width:13rem;
+  }
+  .tarjeta-historial {
+    margin: 3rem 0;
+  }
+
+  .pokedex {
+    background-color: #aaa;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-right: 30px;
+}
+
+.screen {
+    background-color: #fff;
+    border: 5px solid #000;
+    border-radius: 10px;
+    width: 300px;
+    overflow: hidden;
+    position: relative;
+}
+
+.header{
+    background-color: #000;
+    height: 30px;
+}
+
+
+header-btn {
+            background-color: #ccc;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+}
+
+.header-btn:hover {
+    background-color: #ddd;
+}
+
+.component {
+    padding: 1rem 1rem;
+}
+
+.btn {
+    border-style: solid;
+    color: white;
+    border-color: white;
+    margin-right: 2rem;
+}
+
+.boton-mostrar {
+    background-color: black;
+}
+
+.tarjeta-historial {
+    padding: 2rem;
+    text-align: center;
+}
+.tarjeta-historial label {
+    margin-top: 1rem;
+}
+#random {
+    margin-top: 2rem;
+}
+
+    </style>
+</head>
+<body>
+    <div class="pokedex">
+        <div class="screen">
+            <div class="header">
+                <button type="button" class="btn1 btn-danger rounded-circle" style="height: 70px; width: 70px; background-color: aqua;"></button>
+                <button type="button" class="btn1 btn-danger rounded-circle" style="height: 30px; width: 30px; background-color: rgb(255, 0, 0);"></button>
+                <button type="button" class="btn1 btn-danger rounded-circle" style="height: 30px; width: 30px; background-color: rgb(244, 251, 42);"></button>
+                <button type="button" class="btn1 btn-danger rounded-circle" style="height: 30px; width: 30px; background-color: rgb(91, 251, 42);"></button>
+            </div>
+            
+            
+            
+            <div class="footer">
+                <div>
+                    <div id="random" class="pagina component"></div>
+                </div>
+                 
+                <div class="boton-mostrar component">
+                    <button id="botonPoke" type="button" class="btn btn-outline-warning">Buscar pokemon</button> <button type="button" class="btn btn-danger rounded-circle" style="width: 35px; height: 35px;"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="historial" style="background-color: gold;">
+    </div>
+
+
+
+
+    <script>
+        let contenedor;
+const total_pokemons = 500;
+const historial = [];
+
+window.onload = inicio;
+
+function aleatorio(min, max) {  
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+function inicio()
+{
+  contenedor = document.getElementById("random");
+  boton = document.getElementById("botonPoke")
+  mostrarPoke();
+  boton.addEventListener("click",mostrarPoke);
+}
+
+function mostrarPoke(evento){
+  contenedor.innerHTML = "";
+  traerDatos(aleatorio(1,total_pokemons));
+}
+
+function traerDatos(id){
+  fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
+  .then(response => response.json())
+  .then(function(data){
+    let nombre = data.name;
+    let altura = data.height
+    let peso = data.weight;
+    console.log(data);
+    let url = data.sprites.other.dream_world.front_default;
+    if(nombre && url)
+    {
+        historial.push({ nombre, altura, peso, url });
+        imprimirTarjeta(nombre,altura,peso,url);
+    }
+  });
+}
+
+function imprimirTarjeta(nombre,altura,peso,url)
+{
+  let template = `<div class="tarjeta">
+  <img src="${url}" alt="" >
+    <br>
+        <label for="">${nombre}</label> 
+    <br>
+    <br>
+        <label for="">Altura: ${altura}m</label> 
+    <br>
+    <br>
+        <label for="">Peso: ${peso}kg</label> 
+    <br>
+  </div>`;
+  contenedor.innerHTML += template;
+
+  mostrarHistorial();
+}
+
+function mostrarHistorial() {
+    const historialContenedor = document.getElementById("historial");
+  
+    historialContenedor.innerHTML = "";
+  
+    for (let i = 0; i < historial.length; i++) {
+      const { nombre, altura, peso, url } = historial[i];
+      let template = `<div class="tarjeta-historial">
+        <img src="${url}" alt="" >
+        <br>
+            <label for="">${nombre}</label> 
+        <br>
+            <label for="">Altura: ${altura}m</label> 
+        <br>
+            <label for="">Peso: ${peso}kg</label> 
+        <br>
+      </div>
+      <div class"separador"></div>`;
+      historialContenedor.innerHTML += template;
+    }
+  }
+    </script>
+</body>
+</html>
